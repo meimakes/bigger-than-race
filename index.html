@@ -540,10 +540,14 @@
   }
 
   function updateStreakBar() {
+    // Show last 5 results as a rolling window — always reset all dots first
     const dots = streakBar.querySelectorAll('.streak-dot');
+    const recent = roundHistory.slice(-5);
     dots.forEach((d, i) => {
       d.className = 'streak-dot';
-      if (i < roundHistory.length) d.classList.add(roundHistory[i] ? 'lit' : 'miss');
+      if (i < recent.length) {
+        d.classList.add(recent[i] ? 'lit' : 'miss');
+      }
     });
   }
 
@@ -660,7 +664,8 @@
       }
     }
 
-    if (roundHistory.length > 5) roundHistory.shift();
+    // Reset the 5-dot display every 5 rounds so it cycles fresh
+    if (roundHistory.length > 5) roundHistory = [roundHistory[roundHistory.length - 1]];
     updateStreakBar();
 
     const winNum = nums[biggerIdx], loseNum = nums[1 - biggerIdx];
