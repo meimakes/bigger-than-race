@@ -526,6 +526,7 @@
 
   let score = 0, level = 0, streak = 0, maxStreak = 0, nums = [0,0], locked = false;
   let roundHistory = [];
+  let roundsAtLevel = 0;
 
   const car1El = document.getElementById('car1');
   const car2El = document.getElementById('car2');
@@ -698,6 +699,11 @@
     fuel1.className = 'fuel-fill ' + (pct1 < 0.4 ? 'low' : 'high');
     fuel2.className = 'fuel-fill ' + (pct2 < 0.4 ? 'low' : 'high');
 
+    // Show fuel gauges only for first 2 rounds at each level
+    const showGauge = roundsAtLevel < 2;
+    document.querySelectorAll('.fuel-gauge').forEach(g => g.style.display = showGauge ? '' : 'none');
+    roundsAtLevel++;
+
     levelBadge.textContent = LEVELS[level].name;
   }
 
@@ -752,13 +758,13 @@
       if (streak > maxStreak) maxStreak = streak;
       scoreEl.textContent = score;
       roundHistory.push(true);
-      if (streak > 0 && streak % 5 === 0 && level < LEVELS.length - 1) level++;
+      if (streak > 0 && streak % 5 === 0 && level < LEVELS.length - 1) { level++; roundsAtLevel = 0; }
     } else {
       streak = 0;
       roundHistory.push(false);
       if (roundHistory.length >= 3) {
         const wrongs = roundHistory.slice(-3).filter(x => !x).length;
-        if (wrongs >= 2 && level > 0) level--;
+        if (wrongs >= 2 && level > 0) { level--; roundsAtLevel = 0; }
       }
     }
 
@@ -789,6 +795,7 @@
         level = i;
         streak = 0;
         roundHistory = [];
+        roundsAtLevel = 0;
         updateStreakBar();
         pickerEl.classList.remove('open');
         newRound();
