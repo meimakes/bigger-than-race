@@ -256,16 +256,16 @@
   /* Result */
   .result {
     position: absolute;
-    top: 50%;
+    top: 18%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translateX(-50%) scale(0);
     z-index: 30;
     text-align: center;
     pointer-events: none;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
-  .result.show { transform: translate(-50%, -50%) scale(1); }
+  .result.show { transform: translateX(-50%) scale(1); }
 
   .result-emoji { font-size: clamp(60px, 15vw, 100px); }
 
