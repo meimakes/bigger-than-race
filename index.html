@@ -554,6 +554,58 @@
     streakBar.appendChild(d);
   }
 
+  // Sound effects via Web Audio API
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playZoom() {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.6);
+    osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 1.2);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 1.5);
+  }
+
+  function playSuccess() {
+    [0, 0.12, 0.24].forEach((delay, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = [523, 659, 784][i]; // C5, E5, G5
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + delay + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.4);
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + 0.4);
+    });
+  }
+
+  function playWompWomp() {
+    [0, 0.3].forEach((delay, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      const startFreq = i === 0 ? 311 : 277; // Eb4, Db4
+      osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime + delay);
+      osc.frequency.exponentialRampToValueAtTime(startFreq * 0.85, audioCtx.currentTime + delay + 0.4);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.5);
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + 0.5);
+    });
+  }
+
   function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
 
   function pickColors() {
@@ -682,6 +734,10 @@
     const road = document.getElementById('road');
     const roadWidth = road.offsetWidth;
 
+    // Resume audio context on user interaction (mobile requirement)
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    playZoom();
+
     requestAnimationFrame(() => {
       winnerEl.style.transition = 'left 1.8s cubic-bezier(0.2, 0.8, 0.3, 1)';
       loserEl.style.transition = 'left 2.5s cubic-bezier(0.1, 0.3, 0.5, 1)';
@@ -711,7 +767,11 @@
     updateStreakBar();
 
     const winNum = nums[biggerIdx], loseNum = nums[1 - biggerIdx];
-    setTimeout(() => { showResult(correct, winNum, loseNum); if (correct) confetti(); }, 1200);
+    setTimeout(() => {
+      showResult(correct, winNum, loseNum);
+      if (correct) { confetti(); playSuccess(); }
+      else { playWompWomp(); }
+    }, 1200);
     setTimeout(newRound, correct ? 3500 : 3000);
   };
 
