@@ -609,16 +609,15 @@
     const explain = document.getElementById('result-explain');
 
     if (correct) {
-      const phrases = ['VROOM VROOM!','SPEED DEMON!','TURBO BOOST!','ZOOM ZOOM!','NITRO!','WINNER!'];
-      emoji.textContent = ['🏎️','🚀','⚡','🔥','💨','🏁'][Math.random() * 6 | 0];
-      text.textContent = phrases[Math.random() * phrases.length | 0];
+      emoji.textContent = '🏆';
+      text.textContent = '';
       text.style.color = '#4ade80';
     } else {
-      emoji.textContent = '💥';
-      text.textContent = 'Oops!';
+      emoji.textContent = '😔';
+      text.textContent = '';
       text.style.color = '#f87171';
     }
-    explain.textContent = winnerNum + ' is bigger than ' + loserNum + '!';
+    explain.textContent = winnerNum + ' > ' + loserNum;
     resultEl.classList.add('show');
   }
 
