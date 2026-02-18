@@ -345,6 +345,47 @@
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  .level-badge:hover { background: rgba(0,0,0,0.6); }
+
+  .level-picker {
+    position: absolute;
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    background: #1a1a2e;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 8px 0;
+    display: none;
+    min-width: 220px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+
+  .level-picker.open { display: block; }
+
+  .level-option {
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .level-option:hover { background: rgba(255,255,255,0.1); }
+  .level-option.active { background: rgba(240,192,64,0.15); color: #f0c040; }
+
+  .level-range {
+    font-weight: 400;
+    opacity: 0.6;
+    font-size: 12px;
   }
 
   /* Exhaust */
@@ -457,7 +498,8 @@
 </div>
 
 <div class="streak-bar" id="streak-bar"></div>
-<div class="level-badge" id="level-badge"></div>
+<div class="level-badge" id="level-badge" onclick="toggleLevelPicker()"></div>
+<div class="level-picker" id="level-picker"></div>
 
 <script>
 (function() {
@@ -672,6 +714,40 @@
     setTimeout(() => { showResult(correct, winNum, loseNum); if (correct) confetti(); }, 1200);
     setTimeout(newRound, correct ? 3500 : 3000);
   };
+
+  // Level picker
+  const pickerEl = document.getElementById('level-picker');
+
+  function buildLevelPicker() {
+    pickerEl.innerHTML = '';
+    LEVELS.forEach((lv, i) => {
+      const opt = document.createElement('div');
+      opt.className = 'level-option' + (i === level ? ' active' : '');
+      opt.innerHTML = '<span>' + lv.name + '</span><span class="level-range">' + lv.min + '–' + lv.max + '</span>';
+      opt.onclick = function(e) {
+        e.stopPropagation();
+        level = i;
+        streak = 0;
+        roundHistory = [];
+        updateStreakBar();
+        pickerEl.classList.remove('open');
+        newRound();
+      };
+      pickerEl.appendChild(opt);
+    });
+  }
+
+  window.toggleLevelPicker = function() {
+    buildLevelPicker();
+    pickerEl.classList.toggle('open');
+  };
+
+  // Close picker when clicking elsewhere
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.level-picker') && !e.target.closest('.level-badge')) {
+      pickerEl.classList.remove('open');
+    }
+  });
 
   newRound();
 })();
