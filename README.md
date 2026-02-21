@@ -2,6 +2,9 @@
 
 A racing game that teaches number comparison. Two cars pull up with different amounts of fuel — tap the one with more to watch it zoom to the finish line!
 
+Built by [@meimakes](https://x.com/meimakes)
+
+
 Built for a 3-year-old who can count past 100 but is still building intuition for "which number is bigger?"
 
 ## How It Works
